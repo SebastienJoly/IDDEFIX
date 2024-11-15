@@ -6,8 +6,10 @@ Created on Mon Mar 23 13:20:11 2020
 @author: sjoly
 """
 import numpy as np
-from Genetic_algorithm import *
 from scipy.optimize import minimize
+
+from .genetic_algorithm import *
+
 
 '''def generate_parameterBounds(pars, margin=0.1):
     """
