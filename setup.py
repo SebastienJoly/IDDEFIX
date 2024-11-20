@@ -24,6 +24,8 @@ setup(
     url='https://github.com/SebastienJoly/GARFIELD',
     author='Sebastien Joly',
     author_email="sebastien.joly@helmholtz-berlin.de", 
+    maintainer='Elena de la Fuente',
+    maintainer_email="elena.de.la.fuente.garcia@cern.ch",
     license='GNU GENERAL PUBLIC LICENSE',
     download_url="https://pypi.python.org/pypi/garfieldx",
     project_urls={
