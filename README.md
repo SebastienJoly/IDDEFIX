@@ -1,7 +1,7 @@
-<img src="https://raw.githubusercontent.com/SebastienJoly/GARFIELD/main/logo.png"  width="400px"/>
+# <img src="https://raw.githubusercontent.com/SebastienJoly/GARFIELD/main/logo.png"  width="400px"/>
 
-# GARFIELD
-Genetic Algorithm Resonator Fitting for Impedance ExtrapoLation and Determination
+# IDDEFIX
+Impedance Determination through Differential Evolution FItting and eXtrapolation
 
 Example notebooks presenting the different resonator impedance and wake functions implemented as well as how to fit data with them can be found in the folder "examples".
 
