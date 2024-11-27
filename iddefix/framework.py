@@ -20,8 +20,8 @@ class GeneticAlgorithm:
                  impedance_data, 
                  time_data, 
                  wake_data, 
-                 N_resonators, 
-                 parameterBounds,
+                 N_resonators, #=none
+                 parameterBounds, #=none
                  plane="longitudinal", 
                  objectiveFunction = obj.sumOfSquaredError, 
                  wake_length=None,
