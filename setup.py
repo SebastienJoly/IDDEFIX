@@ -21,7 +21,7 @@ setup(
     description="Genetic Algorithm Resonator Fitting for Impedance ExtrapoLation and Determination",
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/SebastienJoly/IDDEFIX',
+    url='https://github.com/ImpedanCEI/IDDEFIX',
     author='Sebastien Joly',
     author_email="sebastien.joly@helmholtz-berlin.de", 
     maintainer='Elena de la Fuente',
