@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/SebastienJoly/GARFIELD/main/logo.png"  width="400px"/>
+# <img src="https://raw.githubusercontent.com/SebastienJoly/IDDEFIX/main/logo.png"  width="400px"/>
 
 # IDDEFIX
 Impedance Determination through Differential Evolution FItting and eXtrapolation
