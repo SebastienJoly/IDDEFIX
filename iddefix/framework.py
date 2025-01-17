@@ -14,7 +14,7 @@ from .solvers import Solvers
 from .objectiveFunctions import ObjectiveFunctions as obj
 from .resonatorFormulas import Impedances as imp
 
-class GeneticAlgorithm:
+class EvolutionaryAlgorithm:
     def __init__(self, 
                  frequency_data, 
                  impedance_data, 
@@ -46,7 +46,7 @@ class GeneticAlgorithm:
         elif plane == "transverse" and N_resonators == 1:
             self.fitFunction = partial(imp.Resonator_transverse_imp, wake_length=wake_length)
 
-        self.geneticParameters = None
+        self.hyperparameters = None
         self.minimizationParameters = None
                 
     def check_impedance_data(self):
@@ -127,7 +127,7 @@ class GeneticAlgorithm:
         
         return solution, message
     
-    def run_geneticAlgorithm(self, 
+    def run_differential_evolution(self, 
                              maxiter=2000, 
                              popsize=15, 
                              mutation=(0.1, 0.5), 
@@ -137,7 +137,7 @@ class GeneticAlgorithm:
                              vectorized=False,
                              solver='scipy',
                              iteration_convergence=False, debug=False):
-        geneticParameters, warning = self.generate_Initial_Parameters(self.parameterBounds, 
+        hyperparameters, warning = self.generate_Initial_Parameters(self.parameterBounds, 
                                                            self.objectiveFunction, 
                                                            self.fitFunction, 
                                                            self.frequency_data, 
@@ -152,13 +152,13 @@ class GeneticAlgorithm:
                                                            #iteration_convergence=iteration_convergence
                                                                 )
 
-        self.geneticParameters = geneticParameters
+        self.hyperparameters = hyperparameters
         self.warning = warning
-        self.display_resonator_parameters(self.geneticParameters)
+        self.display_resonator_parameters(self.hyperparameters)
             
-    def run_minimizationAlgorithm(self, margin=0.1, method='Nelder-Mead'):
+    def run_minimization_algorithm(self, margin=0.1, method='Nelder-Mead'):
         """
-        Minimization algorithm is used to refine results obtained by the genetic algorithm. 
+        Minimization algorithm is used to refine results obtained by the DE algorithm. 
         They are used as initial guess for the algorithm and each parameter is allowed to be
         increased or decreased by 100*margin [%].
         """
@@ -166,10 +166,10 @@ class GeneticAlgorithm:
         objective_function = partial(self.objectiveFunction, fitFunction=self.fitFunction,
                                 x=self.frequency_data, y=self.impedance_data)
         
-        if self.geneticParameters is not None:
-            minimizationBounds = [sorted(((1-margin)*p, (1+margin)*p)) for p in self.geneticParameters]
+        if self.hyperparameters is not None:
+            minimizationBounds = [sorted(((1-margin)*p, (1+margin)*p)) for p in self.hyperparameters]
             minimizationParameters = minimize(objective_function, 
-                                              x0=self.geneticParameters,
+                                              x0=self.hyperparameters,
                                               bounds=minimizationBounds,
                                               tol=1, #empiric value, documentation is cryptic
                                               method=method, 
@@ -179,7 +179,7 @@ class GeneticAlgorithm:
                                                        'adaptive': True}
                                              )
         else:
-            print('Genetic algorithm not run, minimization only')
+            print('Differential Evolution algorithm not run, minimization only')
             minimizationParameters = minimize(objective_function, 
                                               x0=np.mean(self.parameterBounds, axis=1),
                                               bounds=self.parameterBounds, 
