@@ -10,9 +10,9 @@ import numpy as np
 from functools import partial
 from scipy.optimize import minimize
 
-from solvers import Solvers
-from objectiveFunctions import ObjectiveFunctions as obj
-from garfield.resonatorFormulas import Impedances as imp
+from .solvers import Solvers
+from .objectiveFunctions import ObjectiveFunctions as obj
+from .resonatorFormulas import Impedances as imp
 
 class GeneticAlgorithm:
     def __init__(self, 
