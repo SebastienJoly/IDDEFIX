@@ -18,8 +18,8 @@ class EvolutionaryAlgorithm:
     def __init__(self, 
                  frequency_data, 
                  impedance_data, 
-                 time_data, 
-                 wake_data, 
+                 time_data, #=none potentially 
+                 wake_data, #=none potentially
                  N_resonators, #=none
                  parameterBounds, #=none
                  plane="longitudinal", 
