@@ -7,42 +7,23 @@ Created on Sat Dec  5 16:33:41 2020
 """
 import sys
 import numpy as np
+from tqdm import tqdm
 from scipy.optimize import differential_evolution
 
-def progress_bar_gui(total, progress, extra=""):
-    """Displays or updates a console progress bar.
+class ProgressBarCallback:
+    def __init__(self, max_generations):
+        self.max_generations = max_generations
+        self.current_generation = 0
+        self.pbar = tqdm(total=max_generations, desc="Optimization Progress")
 
-    Args:
-        total (int): The total number of steps in the algorithm.
-        progress (int): The current progress (number of completed steps).
-        extra (str, optional): An extra string to append to the progress bar. Defaults to "".
-
-    Original source: https://stackoverflow.com/a/15860757/1391441
-    """
-
-    bar_length = 20  # Set constant bar length
-    completed_blocks = int(round(bar_length * progress / total))
-    remaining_blocks = bar_length - completed_blocks
-    progress_percentage = round(progress / total * 100, 0)
-    progress_percentage = int(progress / total * 100)
-
-    # Build the progress bar string with different symbols
-    symbols = ['#', '-']  # Define progress and remaining symbols
-    progress_bar = "[" + ''.join(completed_blocks * symbols[0] + remaining_blocks * symbols[1]) + "]"
-    status = f"\rProgress: {progress_bar} {progress_percentage}% {extra}"
-
-    # Update the progress bar with a newline when reaching 100%
-    if progress_percentage >= 100:
-        status = f"\rProgress: {progress_bar} {100}% {extra}" + "\n"
-
-    sys.stdout.write(status)
-    sys.stdout.flush()
-    
-def show_progress_bar(x, convergence, *karg):
-    """
-    Callback function to display a progress bar with scipy.
-    """
-    progress_bar_gui(1, convergence, extra="")
+    def __call__(self, xk, convergence):
+        self.current_generation += 1
+        self.pbar.update(1)  # Update the progress bar
+        if convergence < 1e-6:  # Convergence threshold
+            self.pbar.close()
+            return True  # Stop optimization early
+    def close(self):
+        self.pbar.close()
     
 def stop_criterion(solver):
     '''
@@ -88,6 +69,7 @@ class Solvers:
                 - The solution found by the solver.
                 - A message indicating the solver's status.
         """    
+        pbar = ProgressBarCallback(maxiter)
         result = differential_evolution(minimization_function, 
                                         parameterBounds, 
                                         popsize=popsize, 
@@ -98,11 +80,13 @@ class Solvers:
                                         polish=False, 
                                         init='latinhypercube',
                                         strategy='rand1bin',
-                                        callback=show_progress_bar,
+                                        callback=pbar,
                                         updating='deferred', 
-                                        workers=-1, #vectorized=vectorized
+                                        workers=-1, 
+                                        **kwargs,
                                     )
-        
+        pbar.close()
+
         # Need to be reworked to use the last population as the new initial population to speed up convergence
         """while ((result.message == 'Maximum number of iterations has been exceeded.') and (iteration_convergence)):
             warning = 'Increased number of iterations by 10% to reach convergence. \n'
