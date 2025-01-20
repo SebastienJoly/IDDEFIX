@@ -46,7 +46,7 @@ class EvolutionaryAlgorithm:
         elif plane == "transverse" and N_resonators == 1:
             self.fitFunction = partial(imp.Resonator_transverse_imp, wake_length=wake_length)
 
-        self.hyperparameters = None
+        self.evolutionParameters = None
         self.minimizationParameters = None
                 
     def check_impedance_data(self):
@@ -137,7 +137,7 @@ class EvolutionaryAlgorithm:
                              vectorized=False,
                              solver='scipy',
                              iteration_convergence=False, debug=False):
-        hyperparameters, warning = self.generate_Initial_Parameters(self.parameterBounds, 
+        evolutionParameters, warning = self.generate_Initial_Parameters(self.parameterBounds, 
                                                            self.objectiveFunction, 
                                                            self.fitFunction, 
                                                            self.frequency_data, 
@@ -152,9 +152,9 @@ class EvolutionaryAlgorithm:
                                                            #iteration_convergence=iteration_convergence
                                                                 )
 
-        self.hyperparameters = hyperparameters
+        self.evolutionParameters = evolutionParameters
         self.warning = warning
-        self.display_resonator_parameters(self.hyperparameters)
+        self.display_resonator_parameters(self.evolutionParameters)
             
     def run_minimization_algorithm(self, margin=0.1, method='Nelder-Mead'):
         """
@@ -166,10 +166,10 @@ class EvolutionaryAlgorithm:
         objective_function = partial(self.objectiveFunction, fitFunction=self.fitFunction,
                                 x=self.frequency_data, y=self.impedance_data)
         
-        if self.hyperparameters is not None:
-            minimizationBounds = [sorted(((1-margin)*p, (1+margin)*p)) for p in self.hyperparameters]
+        if self.evolutionParameters is not None:
+            minimizationBounds = [sorted(((1-margin)*p, (1+margin)*p)) for p in self.evolutionParameters]
             minimizationParameters = minimize(objective_function, 
-                                              x0=self.hyperparameters,
+                                              x0=self.evolutionParameters,
                                               bounds=minimizationBounds,
                                               tol=1, #empiric value, documentation is cryptic
                                               method=method, 
