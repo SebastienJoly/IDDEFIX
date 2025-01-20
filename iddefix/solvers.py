@@ -147,9 +147,8 @@ class Solvers:
         )    
         solver.cr, solver.f = crossover_rate, np.mean(np.atleast_1d(mutation))
 
-        for i in range(maxiter):
+        for i in tqdm(range(maxiter)):
             best, _ = solver.run(n_it=1)
-            progress_bar_gui(1, np.max((tol / stop_criterion(solver), i / maxiter)))
             if stop_criterion(solver) < tol:
                 break
 
@@ -192,9 +191,8 @@ class Solvers:
             minimize=True,
         )
 
-        for i in range(maxiter):
+        for i in tqdm(range(maxiter)):
             best, _ = solver.run(n_it=1)
-            progress_bar_gui(1, np.max((tol / stop_criterion(solver), i / maxiter)))
             if stop_criterion(solver) < tol:
                 break
 
