@@ -17,14 +17,14 @@ from .resonatorFormulas import Impedances as imp
 class EvolutionaryAlgorithm:
     def __init__(self, 
                  frequency_data, 
-                 impedance_data, 
-                 time_data, #=none potentially 
-                 wake_data, #=none potentially
-                 N_resonators, #=none
-                 parameterBounds, #=none
+                 impedance_data,
+                 N_resonators,
+                 parameterBounds,
                  plane="longitudinal", 
-                 objectiveFunction = obj.sumOfSquaredError, 
+                 objectiveFunction = obj.sumOfSquaredError,
                  wake_length=None,
+                 time_data=None,
+                 wake_data=None,
                 ):
     
         self.frequency_data = frequency_data
