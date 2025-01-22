@@ -6,13 +6,10 @@ Created on Sat Dec  5 16:34:10 2020
 @author: MaltheRaschke
 """
 
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
 from scipy.signal import find_peaks
-
-sys.path.append('../garfield/')
 
 class SmartBoundDetermination:
 
@@ -24,7 +21,7 @@ class SmartBoundDetermination:
         self.peaks_height = None
         self.minus_3dB_points = None
         self.upper_lower_bounds = None
-        self.parameterBounds = self.run()
+        self.parameterBounds = self.find()
 
     def find(self, frequency_data=None, impedance_data=None, minimum_peak_height=None):
         """
@@ -56,7 +53,7 @@ class SmartBoundDetermination:
 
 
         # Find the peaks of the impedance data
-        peaks, peaks_height = find_peaks(impedance_data, height=minimum_peak_height, threshold=None)
+        peaks, peaks_height = find_peaks(np.abs(impedance_data), height=minimum_peak_height, threshold=None)
 
         # Store peaks and peaks_height as instance attributes
         self.peaks = peaks
