@@ -53,7 +53,7 @@ class SmartBoundDetermination:
 
 
         # Find the peaks of the impedance data
-        peaks, peaks_height = find_peaks(np.abs(impedance_data), height=minimum_peak_height, threshold=None)
+        peaks, peaks_height = find_peaks(impedance_data, height=minimum_peak_height, threshold=None)
 
         # Store peaks and peaks_height as instance attributes
         self.peaks = peaks
