@@ -8,6 +8,8 @@ Created on Mon Mar 23 13:20:11 2020
 import numpy as np
 from scipy import special as sp
 
+from .objectiveFunctions import pars_to_dict
+
 class Wakes:
 
     # Longitudinal and transverse wake functions
@@ -125,7 +127,7 @@ class Wakes:
 
         return Wt
 
-    def n_Resonator_longitudinal_wake(times, dict_params):
+    def n_Resonator_longitudinal_wake(times, pars):
         """Calculates the combined longitudinal wake function of multiple resonators.
 
         This function calculates the total longitudinal wake function induced by a system
@@ -134,9 +136,9 @@ class Wakes:
 
         Args:
             times (np.ndarray): Array of time values in seconds.
-            dict_params (dict): Dictionary containing resonator parameters. Keys are
-                unique identifiers for each resonator, and values are lists containing
-                the parameters in the following order:
+            dict_params (dict or ndarray): Dictionary containing resonator parameters. 
+            If dict, Keys are unique identifiers for each resonator, and values are 
+            lists containing the parameters in the following order:
                     - Rs (float): Shunt impedance of the resonator in Ohm.
                     - Q (float): Quality factor of the resonator.
                     - resonant_frequency (float): Resonant frequency of the resonator in Hz.
@@ -147,11 +149,13 @@ class Wakes:
 
         Examples:
             >>> times = np.linspace(0, 1e-9, 1000)
-            >>> dict_params = {
+            >>> pars = {
             ...     1: [1e6, 1, 1e9],
             ...     2: [2e6, 1, 5e8],
             ... }
-            >>> wake_function = n_Resonator_longitudinal_wake(times, dict_params)
+            >>> # Or, use directly the result from the DE solver
+            >>> pars = DE_model.evolutionParameters
+            >>> wake_function = n_Resonator_longitudinal_wake(times, pars)
             >>> plt.plot(times, wake_function)
             >>> plt.xlabel("Time [s]")
             >>> plt.ylabel("Longitudinal Wake Function [V/C]")
@@ -165,10 +169,15 @@ class Wakes:
             - Resonator parameters should be positive values (except for the shunt impedance).
             Behavior for invalid values is not defined and may lead to errors.
         """
+        if type(pars) is dict:
+            dict_params = pars
+        else:
+            dict_params = pars_to_dict(pars) #takes list or ndarray
+
         Wl = sum(Wakes.Resonator_longitudinal_wake(times, *params) for params in dict_params.values())
         return Wl
 
-    def n_Resonator_transverse_wake(times, dict_params):
+    def n_Resonator_transverse_wake(times, pars):
         """Calculates the combined transverse wake function of multiple resonators.
 
         This function calculates the total transverse wake function induced by a system
@@ -177,7 +186,7 @@ class Wakes:
 
         Args:
             times (np.ndarray): Array of time values in seconds.
-            dict_params (dict): Dictionary containing resonator parameters. Keys are
+            dict_params (dict or ndarray): Dictionary containing resonator parameters. Keys are
                 unique identifiers for each resonator, and values are lists containing
                 the parameters in the following order:
                     - Rs (float): Shunt impedance of the resonator in Ohm/m.
@@ -190,11 +199,13 @@ class Wakes:
 
         Examples:
             >>> times = np.linspace(0, 1e-9, 1000)
-            >>> dict_params = {
+            >>> pars = {
             ...     1: [1e6, 1, 1e9],
             ...     2: [2e6, 1, 5e8],
             ... }
-            >>> wake_function = n_Resonator_transverse_wake(times, dict_params)
+            >>> # Or, use directly the result from the DE solver
+            >>> pars = DE_model.evolutionParameters
+            >>> wake_function = n_Resonator_transverse_wake(times, pars)
             >>> plt.plot(times, wake_function)
             >>> plt.xlabel("Time [s]")
             >>> plt.ylabel("Transverse Wake Function [V/C/m]")
@@ -208,6 +219,11 @@ class Wakes:
             - Resonator parameters should be positive values (except for the shunt impedance).
             Behavior for invalid values is not defined and may lead to errors.
         """
+        if type(pars) is dict:
+            dict_params = pars
+        else:
+            dict_params = pars_to_dict(pars) #takes list or ndarray
+
         Wt = sum(Wakes.Resonator_transverse_wake(times, *params) for params in dict_params.values())
         return Wt
 
@@ -511,7 +527,7 @@ class Impedances:
 
         return Zt
 
-    def n_Resonator_longitudinal_imp(frequencies, dict_params, wake_length=None):
+    def n_Resonator_longitudinal_imp(frequencies, pars, wake_length=None):
         """Calculates the combined longitudinal impedance of multiple resonators.
 
         This function calculates the total longitudinal impedance of a system consisting
@@ -520,7 +536,7 @@ class Impedances:
 
         Args:
             frequencies (np.ndarray): Array of frequencies values in Hz.
-            dict_params (dict): Dictionary containing resonator parameters. Keys are
+            dict_params (dict or ndarray): Dictionary containing resonator parameters. Keys are
                 unique identifiers for each resonator, and values are lists containing
                 the parameters in the following order:
                     - Rs (float): Shunt impedance of the resonator in Ohm.
@@ -536,11 +552,13 @@ class Impedances:
 
         Examples:
             >>> frequencies = np.linspace(0, 2.5e9, 1000)
-            >>> dict_params = {
+            >>> pars = {
             ...     1: [1e6, 1, 1e9],
             ...     2: [2e6, 1, 5e8],
             ... }
-            >>> impedance = n_Resonator_longitudinal_imp(frequencies, dict_params)
+            >>> # Or, use directly the result from the DE solver
+            >>> pars = DE_model.evolutionParameters
+            >>> impedance = n_Resonator_longitudinal_imp(frequencies, pars)
             >>> plt.plot(frequencies, impedance)
             >>> plt.xlabel("Frequency [Hz]")
             >>> plt.ylabel("Longitudinal Impedance [Ohm]")
@@ -554,6 +572,11 @@ class Impedances:
             - Resonator parameters should be positive values (except for the shunt impedance).
             Behavior for invalid values is not defined and may lead to errors.
         """
+        if type(pars) is dict:
+            dict_params = pars
+        else:
+            dict_params = pars_to_dict(pars) #takes list or ndarray
+
         if wake_length is None:
             # Fully decayed wake
             Zl = sum(Impedances.Resonator_longitudinal_imp(frequencies, *params) for params in dict_params.values())
@@ -563,7 +586,7 @@ class Impedances:
 
         return Zl
 
-    def n_Resonator_transverse_imp(frequencies, dict_params, wake_length=None):
+    def n_Resonator_transverse_imp(frequencies, pars, wake_length=None):
         """Calculates the combined transverse impedance of multiple resonators.
 
         This function calculates the total transverse impedance of a system consisting
@@ -572,7 +595,7 @@ class Impedances:
 
         Args:
             frequencies (np.ndarray): Array of frequencies values in Hz.
-            dict_params (dict): Dictionary containing resonator parameters. Keys are
+            dict_params (dict or ndaray): Dictionary containing resonator parameters. Keys are
                 unique identifiers for each resonator, and values are lists containing
                 the parameters in the following order:
                     - Rs (float): Shunt impedance of the resonator in Ohm/m.
@@ -588,11 +611,13 @@ class Impedances:
 
         Examples:
             >>> frequencies = np.linspace(0, 2.5e9, 1000)
-            >>> dict_params = {
+            >>> pars = {
             ...     1: [1e6, 1, 1e9],
             ...     2: [2e6, 1, 5e8],
             ... }
-            >>> impedance = n_Resonator_transverse_imp(frequencies, dict_params)
+            >>> # Or, use directly the result from the DE solver
+            >>> pars = DE_model.evolutionParameters
+            >>> impedance = n_Resonator_transverse_imp(frequencies, pars)
             >>> plt.plot(frequencies, impedance)
             >>> plt.xlabel("Frequency [Hz]")
             >>> plt.ylabel("Transverse Impedance [Ohm/m]")
@@ -606,6 +631,11 @@ class Impedances:
             - Resonator parameters should be positive values (except for the shunt impedance).
             Behavior for invalid values is not defined and may lead to errors.
         """
+        if type(pars) is dict:
+            dict_params = pars
+        else:
+            dict_params = pars_to_dict(pars) #takes list or ndarray
+
         if wake_length is None:
             # Fully decayed wake
             Zt = sum(Impedances.Resonator_transverse_imp(frequencies, *params) for params in dict_params.values())
