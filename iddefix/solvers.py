@@ -21,7 +21,10 @@ class ProgressBarCallback:
         self.current_generation += 1
         self.pbar.update((convergence-self.previous_convergence)*100)  # Update the progress bar
         self.previous_convergence = convergence
-        self.pbar
+        if convergence > 1.:  # Convergence threshold
+            self.pbar.close()
+            return True  # Stop optimization early
+
     def close(self):
         self.pbar.close()
     
