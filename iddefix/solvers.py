@@ -14,14 +14,14 @@ class ProgressBarCallback:
     def __init__(self, max_generations):
         self.max_generations = max_generations
         self.current_generation = 0
-        self.pbar = tqdm(total=max_generations, desc="Optimization Progress")
+        self.previous_convergence = 0
+        self.pbar = tqdm(total=100, desc="Optimization Progress %")
 
     def __call__(self, xk, convergence):
         self.current_generation += 1
-        self.pbar.update(1)  # Update the progress bar
-        if convergence < 1e-6:  # Convergence threshold
-            self.pbar.close()
-            return True  # Stop optimization early
+        self.pbar.update((convergence-self.previous_convergence)*100)  # Update the progress bar
+        self.previous_convergence = convergence
+        self.pbar
     def close(self):
         self.pbar.close()
     
