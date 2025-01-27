@@ -41,8 +41,10 @@ Check :file_folder: `examples/` for different DE resonator fitting cases
 
 <img src="https://mattermost.web.cern.ch/files/4si7ipbezfyjdmd1zzr567hswh/public?h=2dcugjRruq3p9yEYea-9f1mXPfUbuujKRNh8dTA77a4"/>
 
+## Contributors :woman_technologist: :man_technologist:
 * Author : Sébastien Joly (sebastien.joly@helmholtz-berlin.de)
 * Collaborator : Malthe Raschke (malthe@raschke.dk)
   * Refactored code and PYPI deployment
   * Smart Bound Determination
   * Example notebooks for extrapolation of analytical and simulated devices
+* Maintainer: Elena de la Fuente (elena.de.la.fuente.garcia@cern.ch)
