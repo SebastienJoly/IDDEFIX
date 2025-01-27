@@ -25,11 +25,22 @@ sd_hide_title: true
 
 The source code is available in the `IDDEFIX` [GitHub repository](https://github.com/ImpedanCEI/IDDEFIX).
 
-```{toctree} 
-:caption: Table of Contents
-:maxdepth: 3
+📚 For information on `IDDEFIX`'s differential evolution theory and code implementation, see:
 
-index.md
+```{toctree} 
+:caption: IDDEFIX
+:maxdepth: 2
 theory.md
 iddefix.rst
+```
+
+📁 For examples on how to use, check out [notebook examples](https://github.com/ImpedanCEI/IDDEFIX/tree/main/examples). They have been embedded in the documentation using `myst_nb`:
+
+```{toctree} 
+:caption: Examples
+:maxdepth: 2
+examples/001_analytical_resonator
+examples/002_extrapolation_sim_data
+examples/003_beam_wire_scanner
+examples/004_sps_transition
 ```

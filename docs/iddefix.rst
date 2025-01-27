@@ -1,17 +1,53 @@
-Overview of ``IDDEFIX`` internal classes and functions, generated from the internal docstrings [#f1]_.
+iddefix package
+===============
 
-.. image:: ../logo.png
-  :alt: IDDEFIX logo
+Submodules
+----------
 
+iddefix.framework module
+------------------------
 
-.. toctree::
-   :maxdepth: 3
+.. automodule:: iddefix.framework
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-   framework
-   genetic_algorithm
-   objective_functions
-   resonator_formula
+iddefix.objectiveFunctions module
+---------------------------------
 
+.. automodule:: iddefix.objectiveFunctions
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
+iddefix.resonatorFormulas module
+--------------------------------
 
-.. [#f1] Created with `sphinx-autodoc2 <https://github.com/chrisjsewell/sphinx-autodoc2>`_
+.. automodule:: iddefix.resonatorFormulas
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+iddefix.smartBoundDetermination module
+--------------------------------------
+
+.. automodule:: iddefix.smartBoundDetermination
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+iddefix.solvers module
+----------------------
+
+.. automodule:: iddefix.solvers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: iddefix
+   :members:
+   :undoc-members:
+   :show-inheritance:
