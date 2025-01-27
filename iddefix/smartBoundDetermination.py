@@ -21,6 +21,7 @@ class SmartBoundDetermination:
         self.peaks_height = None
         self.minus_3dB_points = None
         self.upper_lower_bounds = None
+        self.Nres = None
         self.parameterBounds = self.find()
 
     def find(self, frequency_data=None, impedance_data=None, minimum_peak_height=None):
@@ -84,6 +85,7 @@ class SmartBoundDetermination:
         
             parameterBounds.extend([Rs_bounds, Q_bounds, freq_bounds])
 
+        self.Nres = len(parameterBounds)/3
         return parameterBounds
     
     def inspect(self):
