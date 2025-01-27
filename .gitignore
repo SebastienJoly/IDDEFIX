@@ -1,3 +1,9 @@
+# Docs & packages #
+########
+*_build/
+*egg-info*
+
+
 # Compiled source #
 ###################
 *.com
