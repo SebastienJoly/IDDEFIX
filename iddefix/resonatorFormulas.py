@@ -8,7 +8,7 @@ Created on Mon Mar 23 13:20:11 2020
 import numpy as np
 from scipy import special as sp
 
-from .objectiveFunctions import pars_to_dict
+from .utils import pars_to_dict
 
 class Wakes:
 

@@ -7,34 +7,7 @@ Created on Sat Dec  5 16:34:10 2020
 """
 import numpy as np
 
-def pars_to_dict(pars):
-    """Converts a list of parameters into a dictionary of parameter groups.
-
-    This function takes a list of parameters `pars` and groups them into
-    dictionaries of three parameters (e.g. Rs, Q, resonant_frequency) each. 
-    The keys of the resulting dictionary are integers starting from 0, 
-    and the values are lists containing three consecutive parameters from 
-    the input list.
-
-    Args:
-        pars: A list or array of parameters to be grouped.
-
-    Returns:
-        dict: A dictionary where keys are integers and values are
-             lists of three parameters.
-
-    Raises:
-        ValueError: If the length of `pars` is not a multiple of 3.
-    """
-
-    if len(pars) % 3 != 0:
-        raise ValueError("Input list length must be a multiple of 3")
-
-    grouped_parameters = {}
-    for i in range(0, len(pars), 3):
-        grouped_parameters[i // 3] = pars[i : i + 3]
-
-    return grouped_parameters
+from .utils import pars_to_dict
 
 class ObjectiveFunctions:
     def sumOfSquaredError(parameters, fitFunction, x, y):
