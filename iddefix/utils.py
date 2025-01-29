@@ -31,16 +31,16 @@ def pars_to_dict(pars):
     return grouped_parameters
 
 
-def compute_fft(data_time, data_wake_potential, fmax=3e9, samples=1001):
+def compute_fft(data_time, data_wake, fmax=3e9, samples=1001):
     """
-    Compute the Fourier transform of a wake potential and return the frequencies 
+    Compute the Fourier transform of a wake and return the frequencies 
     and impedance values within a specified frequency range.
 
     Parameters
     ----------
     data_time : array-like
-        Array of time values (in nanoseconds) corresponding to the wake potential data.
-    data_wake_potential : array-like
+        Array of time values (in nanoseconds) corresponding to the wake data.
+    data_wake : array-like
         Array of wake potential values corresponding to `data_time`.
     fmax : float, optional
         Maximum frequency (in Hz) to include in the output. Defaults to 3e9 Hz (3 GHz).
@@ -67,15 +67,15 @@ def compute_fft(data_time, data_wake_potential, fmax=3e9, samples=1001):
     >>> import numpy as np
     >>> from scipy.constants import c
     >>> time = np.linspace(0, 10, 100)  # Time in nanoseconds
-    >>> wake_potential = np.sin(2 * np.pi * 1e9 * time * 1e-9)  # Example wake potential
-    >>> f, Z = compute_fft(time, wake_potential, fmax=2e9, samples=500)
+    >>> wake = np.sin(2 * np.pi * 1e9 * time * 1e-9)  # Example wake 
+    >>> f, Z = compute_fft(time, wake, fmax=2e9, samples=500)
     >>> print(f.shape, Z.shape)
     (500, 500)
     """
     
     ds = (data_time[1] - data_time[0])* 1e-9 * c_light
     N = int((c_light/ds)//fmax*samples)
-    Z = np.fft.fft(data_wake_potential, n=N)
+    Z = np.fft.fft(data_wake, n=N)
     f = np.fft.fftfreq(len(Z), ds/c_light)
 
     # Mask invalid frequencies
