@@ -27,6 +27,15 @@ It computes the shunt impedance, Q-factor and resonant frequecny of the resonato
     * pyfde JADE
 
 * Smart Bound Determination for precise and easy boundary setting
+## How to install
+IDDEFIX is deployed to the [Python Package Index (pyPI)](https://pypi.org/project/iddefix/). To install it in a conda environment do:
+```
+pip install iddefix
+```
+It can also be installed directly from the Github source to get the latest changes:
+```
+pip install git+https://github.com/ImpedanCEI/IDDEFIX
+```
 
 ## How to use / Examples
 
