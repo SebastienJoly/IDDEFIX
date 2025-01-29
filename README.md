@@ -7,6 +7,7 @@
 
 ![PyPI - Version](https://img.shields.io/pypi/v/IDDEFIX?style=flat-square&color=green)
 ![PyPI - License](https://img.shields.io/pypi/l/IDDEFIX?style=flat-square&color=pink)
+[![Documentation Status](https://readthedocs.org/projects/iddefix/badge/?version=latest)](https://iddefix.readthedocs.io/en/latest/?badge=latest)
 
 `IDDEFIX` is a tool for fitting resonators on impedance data using the Differential Evolution algorithm developed by Sébastian Joly. 
 It computes the shunt impedance, Q-factor and resonant frequecny of the resonators present in the impedance data for both partially and fully decayed wakes. By incorporating the partially decayed resonator fitting, `IDDEFIX`  enables the extrapolation of non-converged impedances.
@@ -38,6 +39,8 @@ pip install git+https://github.com/ImpedanCEI/IDDEFIX
 ```
 
 ## How to use / Examples
+
+IDDEFIX is documented using `Sphinx` and `ReadTheDocs`. Documentation is available at: http://iddefix.readthedocs.io/ 
 
 Check :file_folder: `examples/` for different DE resonator fitting cases
 * Analytical resonator initialization and fitting
