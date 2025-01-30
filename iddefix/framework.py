@@ -28,6 +28,87 @@ class EvolutionaryAlgorithm:
                  time_data=None,
                  wake_data=None,
                 ):
+        """
+        Implements an evolutionary algorithm for fitting impedance models to data.
+
+        This class optimizes a resonator-based impedance model to fit measured or 
+        simulated impedance data using an evolutionary algorithm. It supports both 
+        longitudinal and transverse impedance models with a variable number of resonators.
+
+        Parameters
+        ----------
+        frequency_data : numpy.ndarray
+            Array containing the frequency data in Hz.
+        impedance_data : numpy.ndarray
+            Array containing the impedance data in Ohms.
+        N_resonators : int
+            Number of resonators in the model.
+        parameterBounds : list of tuple
+            List of parameter bounds for the optimization. Each resonator has three 
+            parameters: Rs (shunt resistance), Q (quality factor), and fr (resonant frequency).
+        plane : str, optional
+            Type of impedance model, either `"longitudinal"` or `"transverse"`. 
+            Default is `"longitudinal"`.
+        objectiveFunction : callable, optional
+            The objective function to minimize. Default is `obj.sumOfSquaredError`.
+        wake_length : float, optional
+            Length of the wake function in meters. Required for wake computations.
+        time_data : numpy.ndarray, optional
+            Array containing time-domain data in seconds. Used if wake calculations are needed.
+        wake_data : numpy.ndarray, optional
+            Array containing wake potential data.
+
+        Attributes
+        ----------
+        frequency_data : numpy.ndarray
+            Stores the input frequency data.
+        impedance_data : numpy.ndarray
+            Stores the input impedance data.
+        time_data : numpy.ndarray or None
+            Stores time-domain data if provided.
+        wake_data : numpy.ndarray or None
+            Stores wake potential data if provided.
+        N_resonators : int
+            Stores the number of resonators.
+        parameterBounds : list of tuple
+            Stores the parameter bounds used in optimization.
+        objectiveFunction : callable
+            Stores the objective function to be minimized.
+        wake_length : float or None
+            Stores the wake length. 
+            * If provided, the algorithm will use the "partially-decayed" impedance formula
+            * If None, it will use the "fully decayed" impedance formula
+        plane : str
+            Indicates whether the model is `"longitudinal"` or `"transverse"`.
+        fitFunction : callable
+            Partial function used to compute impedance based on the chosen model 
+            (`imp.Resonator_longitudinal_imp`, `imp.n_Resonator_longitudinal_imp`, etc.).
+        evolutionParameters : dict or None
+            Stores parameters of the evolutionary optimization algorithm.
+        minimizationParameters : numpy.ndarray or None
+            Stores the best-fit parameters obtained from the optimization.
+
+        Notes
+        -----
+        - The `fitFunction` is assigned based on the `plane` type and the number of resonators.
+        - The impedance model is based on resonators and can be used for both 
+        single-resonator and multi-resonator systems.
+        - The optimization is performed using an evolutionary algorithm, with results 
+        stored in `minimizationParameters`.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> from evolutionary_algorithm import EvolutionaryAlgorithm
+        >>> freq = np.linspace(1e9, 5e9, 100)  # Frequency range from 1 GHz to 5 GHz
+        >>> Z = np.random.rand(100)  # Example impedance data
+        >>> bounds = [(10, 1000), (1, 100), (1e9, 5e9)]  # Example bounds for Rs, Q, fr
+        >>> algo = EvolutionaryAlgorithm(frequency_data=freq, impedance_data=Z, 
+        ...                              N_resonators=1, parameterBounds=bounds)
+        >>> print(algo.plane)
+        'longitudinal'
+        """
+        
         self.frequency_data = frequency_data
         self.impedance_data = impedance_data
         self.time_data = time_data
