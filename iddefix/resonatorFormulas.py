@@ -286,7 +286,17 @@ class Wakes:
             W = cst * expo1 * (cstsin * np.imag(expo2 * erfc_v) + cstcos * np.real(expo2 * erfc_v))
 
         return W
+    
+    def n_Resonator_longitudinal_wake_potential(times, sigma, pars):
 
+        if type(pars) is dict:
+            dict_params = pars
+        else:
+            dict_params = pars_to_dict(pars) #takes list or ndarray
+
+        Wpl = sum(Wakes.Resonator_longitudinal_wake_potential(times, sigma, *params) for params in dict_params.values())
+        return Wpl
+    
     def Resonator_transverse_wake_potential(times, sigma, Rs, Q, resonant_frequency, use_mpmath=False):
         """
         Single resonator wake potential (transverse) for a Gaussian bunch of line density.
@@ -343,6 +353,16 @@ class Wakes:
 
         return W
 
+    def n_Resonator_transverse_wake_potential(times, sigma, pars):
+
+        if type(pars) is dict:
+            dict_params = pars
+        else:
+            dict_params = pars_to_dict(pars) #takes list or ndarray
+
+        Wpt = sum(Wakes.Resonator_transverse_wake_potential(times, sigma, *params) for params in dict_params.values())
+        return Wpt
+    
 
 class Impedances:
 
