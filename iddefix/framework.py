@@ -13,6 +13,8 @@ from scipy.optimize import minimize
 from .solvers import Solvers
 from .objectiveFunctions import ObjectiveFunctions as obj
 from .resonatorFormulas import Impedances as imp
+from .resonatorFormulas import Wakes as wak
+from .utils import compute_fft
 
 class EvolutionaryAlgorithm:
     def __init__(self, 
@@ -26,7 +28,6 @@ class EvolutionaryAlgorithm:
                  time_data=None,
                  wake_data=None,
                 ):
-    
         self.frequency_data = frequency_data
         self.impedance_data = impedance_data
         self.time_data = time_data
@@ -222,3 +223,170 @@ class EvolutionaryAlgorithm:
 
             print("-" * 70)
 
+    def get_wake(self, time_data=None, pars='minimization'):
+
+        # Check for time data 
+        if time_data is None:
+            if self.time_data is None:
+                raise AttributeError("Provide time data array")
+            time_data = self.time_data
+        else:
+            if self.time_data is None:
+                self.time_data = time_data
+
+        # Which pars to use
+        if pars == 'minimization' and self.minimizationParameters is not None:
+            pars = self.minimizationParameters
+        else:
+            pars = self.evolutionParameters
+
+        # Which plane and formula
+        if self.plane == "longitudinal" and self.N_resonators > 1:
+            wake_data = wak.n_Resonator_longitudinal_wake(time_data, pars)
+        elif self.plane == "transverse" and self.N_resonators > 1:
+            wake_data = wak.n_Resonator_transverse_wake(time_data, pars)
+        elif self.plane == "longitudinal" and self.N_resonators == 1:
+            wake_data = wak.Resonator_longitudinal_wake(time_data, pars)
+        elif self.plane == "transverse" and self.N_resonators == 1:
+            wake_data = wak.Resonator_transverse_wake(time_data, pars)
+
+        if self.wake_data is None:
+            self.wake_data = wake_data
+
+        return wake_data
+    
+    def get_wake_potential(self, time_data=None, sigma=1e-9, pars='minimization'):
+
+        # Check for time data 
+        if time_data is None:
+            if self.time_data is None:
+                raise AttributeError("Provide time data array")
+            time_data = self.time_data
+        else:
+            if self.time_data is None:
+                self.time_data = time_data
+
+        # Which pars to use
+        if pars == 'minimization' and self.minimizationParameters is not None:
+            pars = self.minimizationParameters
+        else:
+            pars = self.evolutionParameters
+
+        # Which plane and formula
+        if self.plane == "longitudinal" and self.N_resonators > 1:
+            wake_potential_data = imp.n_Resonator_longitudinal_wake_potential(time_data, sigma, pars)
+        elif self.plane == "transverse" and self.N_resonators > 1:
+            wake_potential_data = imp.n_Resonator_transverse_wake_potential(time_data, sigma, pars)
+        elif self.plane == "longitudinal" and self.N_resonators == 1:
+            wake_potential_data = imp.Resonator_longitudinal_wake_potential(time_data, sigma, pars)
+        elif self.plane == "transverse" and self.N_resonators == 1:
+            wake_potential_data = imp.Resonator_transverse_wake_potential(time_data, sigma, pars)
+
+        return wake_potential_data
+    
+    def get_impedance_from_fitFunction(self, frequency_data=None, pars='minimization'):
+        # Check for frequency data 
+        if frequency_data is None:
+            if self.frequency_data is None:
+                raise AttributeError("Provide frequency data array")
+            frequency_data = self.frequency_data
+        else:
+            if self.frequency_data is None:
+                self.frequency_data = frequency_data
+
+        # Which pars to use
+        if pars == 'minimization' and self.minimizationParameters is not None:
+            pars = self.minimizationParameters
+        else:
+            pars = self.evolutionParameters
+
+        impedance_data = self.fitFunction(frequency_data, pars)
+        return 
+
+    def get_impedance(self, frequency_data=None,
+                      pars='minimization', wakelength=None):
+        # Check for frequency data 
+        if frequency_data is None:
+            if self.frequency_data is None:
+                raise AttributeError("Provide frequency data array")
+            frequency_data = self.frequency_data
+        else:
+            if self.frequency_data is None:
+                self.frequency_data = frequency_data
+
+        # Which pars to use
+        if pars == 'minimization' and self.minimizationParameters is not None:
+            pars = self.minimizationParameters
+        else:
+            pars = self.evolutionParameters
+
+        # Which plane and formula
+        if self.plane == "longitudinal" and self.N_resonators > 1:
+            impedance_data = wak.n_Resonator_longitudinal_imp(frequency_data, pars, wakelength)
+        elif self.plane == "transverse" and self.N_resonators > 1:
+            impedance_data = wak.n_Resonator_transverse_imp(frequency_data, pars, wakelength)
+        elif self.plane == "longitudinal" and self.N_resonators == 1:
+            impedance_data = wak.Resonator_longitudinal_imp(frequency_data, pars, wakelength)
+        elif self.plane == "transverse" and self.N_resonators == 1:
+            impedance_data = wak.Resonator_transverse_imp(frequency_data, pars, wakelength)
+        return 
+    
+    def get_impedance_from_fft(self, time_data=None, wake_data=None, 
+                               fmax=3e9, samples=1001):
+        # Check for time data 
+        if time_data is None:
+            if self.time_data is None:
+                raise AttributeError("Provide time data array")
+            time_data = self.time_data
+        else:
+            if self.time_data is None:
+                self.time_data = time_data
+        
+        wake_data = self.get_wake(self.time_data)
+
+        f, Z = compute_fft(data_time=time_data,
+                           data_wake=wake_data,
+                           fmax=fmax, 
+                           samples=samples)
+        
+        if self.plane is 'transverse':
+            Z *= -1j
+        
+        return f, Z
+
+    def compute_fft(self, data_time=None, data_wake=None, fmax=3e9, samples=1001):
+        # Check for time data - not override self
+        if time_data is None:
+            if self.time_data is None:
+                raise AttributeError("Provide time data array")
+            time_data = self.time_data
+
+        # Check for wake data - not override self
+        if wake_data is None:
+            if self.wake_data is None:
+                raise AttributeError("Provide wake data array")
+            wake_data = self.wake_data
+
+        compute_fft(data_time, data_wake, fmax, samples)
+
+    def get_extrapolated_wake(self, new_end_time, dt=0.01, 
+                              time_data=None, pars='minimization'):
+
+        # Check for time data 
+        if time_data is None:
+            if self.time_data is None:
+                raise AttributeError("Provide time data array")
+            time_data = self.time_data
+        else:
+            if self.time_data is None:
+                self.time_data = time_data
+
+        dt = np.min(time_data[1:]-time_data[:-1])
+
+        ext_time_data = np.concatenate(time_data[:-1], 
+                                       np.arange(time_data[-1], new_end_time, dt))
+        
+        ext_wake_data = self.get_wake(ext_time_data, pars=pars)
+
+        return ext_time_data, ext_wake_data   
+    
