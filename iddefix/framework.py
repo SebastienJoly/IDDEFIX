@@ -194,36 +194,36 @@ class EvolutionaryAlgorithm:
         self.minimizationParameters = minimizationParameters.x
         self.display_resonator_parameters(self.minimizationParameters)
     
-    def display_resonator_parameters(self, solution, to_markdown=False):
+    def display_resonator_parameters(self, params=None, to_markdown=False):
         """
         Displays resonance parameters in a formatted table using ASCII characters.
 
         Args:
             solution: A NumPy array of resonator parameters, typically shaped (n_resonators, 3).
         """
-
-        n_resonators, _ = solution.reshape(-1,3).shape
         header_format = "{:^10}|{:^24}|{:^18}|{:^18}"
         data_format = "{:^10d}|{:^24.2e}|{:^18.2f}|{:^18.3e}"
         if to_markdown:
-            #change format to markdown
-            pass
+            print("\n")
+            print("| Resonator | Rs [Ohm/m or Ohm] | Q | fres [Hz] |")
+            print("|-----------|------------------|---|-----------|")
+            for i, parameters in enumerate(params.reshape(-1, 3)):
+                print(f"| {i + 1} | {parameters[0]:.6g} | {parameters[1]:.6g} | {parameters[2]:.6g} |")
         else:
             print("\n")
             print("-" * 70)
-
 
             # Print header
             print(header_format.format("Resonator", "Rs [Ohm/m or Ohm]", "Q", "fres [Hz]"))
             print("-" * 70)
 
             # Print data
-            for i, parameters in enumerate(solution.reshape(-1,3)):
+            for i, parameters in enumerate(params.reshape(-1,3)):
                 print(data_format.format(i + 1, *parameters))
 
             print("-" * 70)
 
-    def get_wake(self, time_data=None, pars='minimization'):
+    def get_wake(self, time_data=None, use_minimization=True):
 
         # Check for time data 
         if time_data is None:
@@ -235,7 +235,7 @@ class EvolutionaryAlgorithm:
                 self.time_data = time_data
 
         # Which pars to use
-        if pars == 'minimization' and self.minimizationParameters is not None:
+        if use_minimization and self.minimizationParameters is not None:
             pars = self.minimizationParameters
         else:
             pars = self.evolutionParameters
@@ -255,7 +255,7 @@ class EvolutionaryAlgorithm:
 
         return wake_data
     
-    def get_wake_potential(self, time_data=None, sigma=1e-9, pars='minimization'):
+    def get_wake_potential(self, time_data=None, sigma=1e-9, use_minimization=True):
 
         # Check for time data 
         if time_data is None:
@@ -267,24 +267,24 @@ class EvolutionaryAlgorithm:
                 self.time_data = time_data
 
         # Which pars to use
-        if pars == 'minimization' and self.minimizationParameters is not None:
+        if use_minimization and self.minimizationParameters is not None:
             pars = self.minimizationParameters
         else:
             pars = self.evolutionParameters
 
         # Which plane and formula
         if self.plane == "longitudinal" and self.N_resonators > 1:
-            wake_potential_data = imp.n_Resonator_longitudinal_wake_potential(time_data, sigma, pars)
+            wake_potential_data = wak.n_Resonator_longitudinal_wake_potential(time_data, sigma, pars)
         elif self.plane == "transverse" and self.N_resonators > 1:
-            wake_potential_data = imp.n_Resonator_transverse_wake_potential(time_data, sigma, pars)
+            wake_potential_data = wak.n_Resonator_transverse_wake_potential(time_data, sigma, pars)
         elif self.plane == "longitudinal" and self.N_resonators == 1:
-            wake_potential_data = imp.Resonator_longitudinal_wake_potential(time_data, sigma, pars)
+            wake_potential_data = wak.Resonator_longitudinal_wake_potential(time_data, sigma, pars)
         elif self.plane == "transverse" and self.N_resonators == 1:
-            wake_potential_data = imp.Resonator_transverse_wake_potential(time_data, sigma, pars)
+            wake_potential_data = wak.Resonator_transverse_wake_potential(time_data, sigma, pars)
 
         return wake_potential_data
     
-    def get_impedance_from_fitFunction(self, frequency_data=None, pars='minimization'):
+    def get_impedance_from_fitFunction(self, frequency_data=None, use_minimization=True):
         # Check for frequency data 
         if frequency_data is None:
             if self.frequency_data is None:
@@ -295,7 +295,7 @@ class EvolutionaryAlgorithm:
                 self.frequency_data = frequency_data
 
         # Which pars to use
-        if pars == 'minimization' and self.minimizationParameters is not None:
+        if use_minimization and self.minimizationParameters is not None:
             pars = self.minimizationParameters
         else:
             pars = self.evolutionParameters
@@ -304,7 +304,7 @@ class EvolutionaryAlgorithm:
         return 
 
     def get_impedance(self, frequency_data=None,
-                      pars='minimization', wakelength=None):
+                      use_minimization=True, wakelength=None):
         # Check for frequency data 
         if frequency_data is None:
             if self.frequency_data is None:
@@ -315,21 +315,22 @@ class EvolutionaryAlgorithm:
                 self.frequency_data = frequency_data
 
         # Which pars to use
-        if pars == 'minimization' and self.minimizationParameters is not None:
+        if use_minimization and self.minimizationParameters is not None:
             pars = self.minimizationParameters
         else:
             pars = self.evolutionParameters
 
         # Which plane and formula
         if self.plane == "longitudinal" and self.N_resonators > 1:
-            impedance_data = wak.n_Resonator_longitudinal_imp(frequency_data, pars, wakelength)
+            impedance_data = imp.n_Resonator_longitudinal_imp(frequency_data, pars, wakelength)
         elif self.plane == "transverse" and self.N_resonators > 1:
-            impedance_data = wak.n_Resonator_transverse_imp(frequency_data, pars, wakelength)
+            impedance_data = imp.n_Resonator_transverse_imp(frequency_data, pars, wakelength)
         elif self.plane == "longitudinal" and self.N_resonators == 1:
-            impedance_data = wak.Resonator_longitudinal_imp(frequency_data, pars, wakelength)
+            impedance_data = imp.Resonator_longitudinal_imp(frequency_data, pars, wakelength)
         elif self.plane == "transverse" and self.N_resonators == 1:
-            impedance_data = wak.Resonator_transverse_imp(frequency_data, pars, wakelength)
-        return 
+            impedance_data = imp.Resonator_transverse_imp(frequency_data, pars, wakelength)
+        
+        return impedance_data
     
     def get_impedance_from_fft(self, time_data=None, wake_data=None, 
                                fmax=3e9, samples=1001):
@@ -349,7 +350,7 @@ class EvolutionaryAlgorithm:
                            fmax=fmax, 
                            samples=samples)
         
-        if self.plane is 'transverse':
+        if self.plane == 'transverse':
             Z *= -1j
         
         return f, Z
@@ -370,7 +371,7 @@ class EvolutionaryAlgorithm:
         compute_fft(data_time, data_wake, fmax, samples)
 
     def get_extrapolated_wake(self, new_end_time, dt=0.01, 
-                              time_data=None, pars='minimization'):
+                              time_data=None, use_minimization=True):
 
         # Check for time data 
         if time_data is None:
@@ -386,7 +387,7 @@ class EvolutionaryAlgorithm:
         ext_time_data = np.concatenate(time_data[:-1], 
                                        np.arange(time_data[-1], new_end_time, dt))
         
-        ext_wake_data = self.get_wake(ext_time_data, pars=pars)
+        ext_wake_data = self.get_wake(ext_time_data, use_minimization)
 
         return ext_time_data, ext_wake_data   
     
