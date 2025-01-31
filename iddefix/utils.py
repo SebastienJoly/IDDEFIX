@@ -39,7 +39,7 @@ def compute_fft(data_time, data_wake, fmax=3e9, samples=1001):
     Parameters
     ----------
     data_time : array-like
-        Array of time values (in nanoseconds) corresponding to the wake data.
+        Array of time values (in seconds) corresponding to the wake data.
     data_wake : array-like
         Array of wake potential values corresponding to `data_time`.
     fmax : float, optional
@@ -73,7 +73,7 @@ def compute_fft(data_time, data_wake, fmax=3e9, samples=1001):
     (500, 500)
     """
     
-    ds = (data_time[1] - data_time[0])* 1e-9 * c_light
+    ds = (data_time[1] - data_time[0])* c_light
     N = int((c_light/ds)//fmax*samples)
     Z = np.fft.fft(data_wake, n=N)
     f = np.fft.fftfreq(len(Z), ds/c_light)
