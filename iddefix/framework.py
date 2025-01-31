@@ -108,7 +108,7 @@ class EvolutionaryAlgorithm:
         >>> print(algo.plane)
         'longitudinal'
         """
-        
+
         self.frequency_data = frequency_data
         self.impedance_data = impedance_data
         self.time_data = time_data
@@ -127,7 +127,9 @@ class EvolutionaryAlgorithm:
             self.fitFunction = partial(imp.Resonator_longitudinal_imp, wake_length=wake_length)
         elif plane == "transverse" and N_resonators == 1:
             self.fitFunction = partial(imp.Resonator_transverse_imp, wake_length=wake_length)
-
+        else:
+            raise Exception('Algorithm needs N_resonartors >= 1')
+        
         self.evolutionParameters = None
         self.minimizationParameters = None
                 
@@ -382,7 +384,8 @@ class EvolutionaryAlgorithm:
             pars = self.evolutionParameters
 
         impedance_data = self.fitFunction(frequency_data, pars)
-        return 
+        
+        return impedance_data
 
     def get_impedance(self, frequency_data=None,
                       use_minimization=True, wakelength=None):
@@ -451,22 +454,26 @@ class EvolutionaryAlgorithm:
 
         compute_fft(data_time, data_wake, fmax, samples)
 
-    def get_extrapolated_wake(self, new_end_time, dt=0.01, 
+    def get_extrapolated_wake(self, new_end_time=None, dt=None, 
                               time_data=None, use_minimization=True):
 
         # Check for time data 
         if time_data is None:
             if self.time_data is None:
-                raise AttributeError("Provide time data array")
+                raise AttributeError("Provide `time_data` array")
             time_data = self.time_data
         else:
             if self.time_data is None:
                 self.time_data = time_data
 
-        dt = np.min(time_data[1:]-time_data[:-1])
+        if new_end_time is None:
+            raise Exception('Provide `new_end_time` to extrapolate')
 
-        ext_time_data = np.concatenate(time_data[:-1], 
-                                       np.arange(time_data[-1], new_end_time, dt))
+        if dt is None:
+            dt = np.min(time_data[1:]-time_data[:-1])
+
+        ext_time_data = np.concatenate((time_data[:-1], 
+                                       np.arange(time_data[-1], new_end_time, dt)))
         
         ext_wake_data = self.get_wake(ext_time_data, use_minimization)
 
