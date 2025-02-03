@@ -174,7 +174,7 @@ class Wakes:
         else:
             dict_params = pars_to_dict(pars) #takes list or ndarray
 
-        Wl = sum(Wakes.Resonator_longitudinal_wake(times, *params) for params in dict_params.values())
+        Wl = np.sum(Wakes.Resonator_longitudinal_wake(times, *params) for params in dict_params.values())
         return Wl
 
     def n_Resonator_transverse_wake(times, pars):
@@ -224,7 +224,7 @@ class Wakes:
         else:
             dict_params = pars_to_dict(pars) #takes list or ndarray
 
-        Wt = sum(Wakes.Resonator_transverse_wake(times, *params) for params in dict_params.values())
+        Wt = np.sum(Wakes.Resonator_transverse_wake(times, *params) for params in dict_params.values())
         return Wt
 
     # Longitudinal and transverse wake potentials
@@ -294,7 +294,7 @@ class Wakes:
         else:
             dict_params = pars_to_dict(pars) #takes list or ndarray
 
-        Wpl = sum(Wakes.Resonator_longitudinal_wake_potential(times, *params, sigma=sigma) for params in dict_params.values())
+        Wpl = np.sum(Wakes.Resonator_longitudinal_wake_potential(times, *params, sigma=sigma) for params in dict_params.values())
         return Wpl
     
     def Resonator_transverse_wake_potential(times, Rs, Q, resonant_frequency, sigma=1e-10, use_mpmath=False):
@@ -360,7 +360,7 @@ class Wakes:
         else:
             dict_params = pars_to_dict(pars) #takes list or ndarray
 
-        Wpt = sum(Wakes.Resonator_transverse_wake_potential(times, *params, sigma=sigma) for params in dict_params.values())
+        Wpt = np.sum(Wakes.Resonator_transverse_wake_potential(times, *params, sigma=sigma) for params in dict_params.values())
         return Wpt
     
 
@@ -599,10 +599,10 @@ class Impedances:
 
         if wake_length is None:
             # Fully decayed wake
-            Zl = sum(Impedances.Resonator_longitudinal_imp(frequencies, *params) for params in dict_params.values())
+            Zl = np.sum(Impedances.Resonator_longitudinal_imp(frequencies, *params) for params in dict_params.values())
         else:
             # Partially decayed wake
-            Zl = sum(Impedances.Resonator_longitudinal_imp(frequencies, *params, wake_length=wake_length) for params in dict_params.values())
+            Zl = np.sum(Impedances.Resonator_longitudinal_imp(frequencies, *params, wake_length=wake_length) for params in dict_params.values())
 
         return Zl
 
@@ -658,9 +658,9 @@ class Impedances:
 
         if wake_length is None:
             # Fully decayed wake
-            Zt = sum(Impedances.Resonator_transverse_imp(frequencies, *params) for params in dict_params.values())
+            Zt = np.sum(Impedances.Resonator_transverse_imp(frequencies, *params) for params in dict_params.values())
         else:
             # Partially decayed wake
-            Zt = sum(Impedances.Resonator_transverse_imp(frequencies, *params, wake_length=wake_length) for params in dict_params.values())
+            Zt = np.sum(Impedances.Resonator_transverse_imp(frequencies, *params, wake_length=wake_length) for params in dict_params.values())
 
         return Zt
