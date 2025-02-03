@@ -10,6 +10,6 @@ from .objectiveFunctions import ObjectiveFunctions
 from .resonatorFormulas import Wakes, Impedances
 from .smartBoundDetermination import SmartBoundDetermination
 
-from .utils import compute_fft
+from .utils import compute_fft, compute_deconvolution
 
 from ._version import __version__

@@ -84,3 +84,26 @@ def compute_fft(data_time, data_wake, fmax=3e9, samples=1001):
     f = f[mask]                                  
 
     return f, Z
+
+def compute_deconvolution(data_time, data_wake_potential, sigma, fmax=3e9, samples=1001):
+
+    ds = (data_time[1] - data_time[0])*c_light
+    N = int((c_light/ds)//fmax*samples)
+
+    # Analytical gaussian with given sigma
+    lambdat = 1/(sigma*np.sqrt(2*np.pi))*np.exp(-(data_time**2)/(2*sigma**2))/c_light
+    
+    Z = np.fft.fft(data_wake_potential, n=N)
+    lambdaf = np.fft.fft(lambdat, n=N)
+    f = np.fft.fftfreq(len(Z), ds/c_light)
+
+    # Mask invalid frequencies
+    mask  = np.logical_and(f >= 0 , f < fmax)
+    Z = Z[mask] / lambdaf[mask]
+    f = f[mask]     
+    
+    return f, Z
+
+def compute_ifft(data_frequency, data_impedance):
+
+    print("TODO: use neffint package to compute ifft with non-equidistant samples")
