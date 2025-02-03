@@ -228,7 +228,7 @@ class Wakes:
         return Wt
 
     # Longitudinal and transverse wake potentials
-    def Resonator_longitudinal_wake_potential(times, sigma, Rs, Q, resonant_frequency, use_mpmath=False):
+    def Resonator_longitudinal_wake_potential(times, Rs, Q, resonant_frequency, sigma=1e-10, use_mpmath=False):
         """
         Single resonator wake potential (longitudinal) for a Gaussian bunch of line density.
 
@@ -287,17 +287,17 @@ class Wakes:
 
         return W
     
-    def n_Resonator_longitudinal_wake_potential(times, sigma, pars):
+    def n_Resonator_longitudinal_wake_potential(times, pars, sigma=1e-10):
 
         if type(pars) is dict:
             dict_params = pars
         else:
             dict_params = pars_to_dict(pars) #takes list or ndarray
 
-        Wpl = sum(Wakes.Resonator_longitudinal_wake_potential(times, sigma, *params) for params in dict_params.values())
+        Wpl = sum(Wakes.Resonator_longitudinal_wake_potential(times, *params, sigma=sigma) for params in dict_params.values())
         return Wpl
     
-    def Resonator_transverse_wake_potential(times, sigma, Rs, Q, resonant_frequency, use_mpmath=False):
+    def Resonator_transverse_wake_potential(times, Rs, Q, resonant_frequency, sigma=1e-10, use_mpmath=False):
         """
         Single resonator wake potential (transverse) for a Gaussian bunch of line density.
 
@@ -353,14 +353,14 @@ class Wakes:
 
         return W
 
-    def n_Resonator_transverse_wake_potential(times, sigma, pars):
+    def n_Resonator_transverse_wake_potential(times, pars, sigma=1e-10):
 
         if type(pars) is dict:
             dict_params = pars
         else:
             dict_params = pars_to_dict(pars) #takes list or ndarray
 
-        Wpt = sum(Wakes.Resonator_transverse_wake_potential(times, sigma, *params) for params in dict_params.values())
+        Wpt = sum(Wakes.Resonator_transverse_wake_potential(times, *params, sigma=sigma) for params in dict_params.values())
         return Wpt
     
 

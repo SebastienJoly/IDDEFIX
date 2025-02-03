@@ -357,13 +357,13 @@ class EvolutionaryAlgorithm:
 
         # Which plane and formula
         if self.plane == "longitudinal" and self.N_resonators > 1:
-            wake_potential_data = wak.n_Resonator_longitudinal_wake_potential(time_data, sigma, pars)
+            wake_potential_data = wak.n_Resonator_longitudinal_wake_potential(time_data, pars, sigma=sigma)
         elif self.plane == "transverse" and self.N_resonators > 1:
-            wake_potential_data = wak.n_Resonator_transverse_wake_potential(time_data, sigma, pars)
+            wake_potential_data = wak.n_Resonator_transverse_wake_potential(time_data, pars, sigma=sigma)
         elif self.plane == "longitudinal" and self.N_resonators == 1:
-            wake_potential_data = wak.Resonator_longitudinal_wake_potential(time_data, sigma, pars)
+            wake_potential_data = wak.Resonator_longitudinal_wake_potential(time_data, pars, sigma=sigma)
         elif self.plane == "transverse" and self.N_resonators == 1:
-            wake_potential_data = wak.Resonator_transverse_wake_potential(time_data, sigma, pars)
+            wake_potential_data = wak.Resonator_transverse_wake_potential(time_data, pars, sigma=sigma)
 
         return wake_potential_data
     
