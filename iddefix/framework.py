@@ -18,15 +18,15 @@ from .utils import compute_fft
 
 class EvolutionaryAlgorithm:
     def __init__(self, 
-                 frequency_data, 
-                 impedance_data,
+                 x_data, 
+                 y_data,
                  N_resonators,
                  parameterBounds,
                  plane="longitudinal", 
+                 fitFuncion="impedance",
                  objectiveFunction = obj.sumOfSquaredError,
                  wake_length=None,
-                 time_data=None,
-                 wake_data=None,
+                 sigma=None,
                 ):
         """
         Implements an evolutionary algorithm for fitting impedance models to data.
@@ -37,15 +37,18 @@ class EvolutionaryAlgorithm:
 
         Parameters
         ----------
-        frequency_data : numpy.ndarray
-            Array containing the frequency data in Hz.
-        impedance_data : numpy.ndarray
-            Array containing the impedance data in Ohms.
+        x_data : numpy.ndarray
+            Stores the input x data: frequencies for impedance [Hz], or
+            times for wake function and wake potential [s]
+        y_data : numpy.ndarray
+            Stores the input y data: impedance data [Ohm] or Wake function/potential [V/C/s]
         N_resonators : int
             Number of resonators in the model.
         parameterBounds : list of tuple
             List of parameter bounds for the optimization. Each resonator has three 
             parameters: Rs (shunt resistance), Q (quality factor), and fr (resonant frequency).
+        fitFunction: str, optional
+            Specify which fitFunction to use: ["impedance", "wake", "wake_potential"]
         plane : str, optional
             Type of impedance model, either `"longitudinal"` or `"transverse"`. 
             Default is `"longitudinal"`.
@@ -53,33 +56,10 @@ class EvolutionaryAlgorithm:
             The objective function to minimize. Default is `obj.sumOfSquaredError`.
         wake_length : float, optional
             Length of the wake function in meters. Required for wake computations.
-        time_data : numpy.ndarray, optional
-            Array containing time-domain data in seconds. Used if wake calculations are needed.
-        wake_data : numpy.ndarray, optional
-            Array containing wake potential data.
+        sigma : float, optional
 
         Attributes
         ----------
-        frequency_data : numpy.ndarray
-            Stores the input frequency data.
-        impedance_data : numpy.ndarray
-            Stores the input impedance data.
-        time_data : numpy.ndarray or None
-            Stores time-domain data if provided.
-        wake_data : numpy.ndarray or None
-            Stores wake potential data if provided.
-        N_resonators : int
-            Stores the number of resonators.
-        parameterBounds : list of tuple
-            Stores the parameter bounds used in optimization.
-        objectiveFunction : callable
-            Stores the objective function to be minimized.
-        wake_length : float or None
-            Stores the wake length. 
-            * If provided, the algorithm will use the "partially-decayed" impedance formula
-            * If None, it will use the "fully decayed" impedance formula
-        plane : str
-            Indicates whether the model is `"longitudinal"` or `"transverse"`.
         fitFunction : callable
             Partial function used to compute impedance based on the chosen model 
             (`imp.Resonator_longitudinal_imp`, `imp.n_Resonator_longitudinal_imp`, etc.).
@@ -87,11 +67,21 @@ class EvolutionaryAlgorithm:
             Stores parameters of the evolutionary optimization algorithm.
         minimizationParameters : numpy.ndarray or None
             Stores the best-fit parameters obtained from the optimization.
+        time_data : numpy.ndarray
+            Stores the input x data: times for wake function and wake potential [s]
+        wake_data : numpy.ndarray
+            Stores the input Wake function [V/C/s]
+        wake_potential_data : numpy.ndarray
+            Stores the input Wake potential [V/C/s]
+        frequency_data : numpy.ndarray
+            Stores the input x data: frequencies for impedance [Hz]
+        impedance_data : numpy.ndarray
+            Stores the input impedance data [Ohm]
 
         Notes
         -----
-        - The `fitFunction` is assigned based on the `plane` type and the number of resonators.
-        - The impedance model is based on resonators and can be used for both 
+        - The `fitFunction` is assigned based on the `plane` type, the `fitFunction` mode, and the number of resonators.
+        - The impedance and wake model is based on resonators and can be used for both 
         single-resonator and multi-resonator systems.
         - The optimization is performed using an evolutionary algorithm, with results 
         stored in `minimizationParameters`.
@@ -103,43 +93,83 @@ class EvolutionaryAlgorithm:
         >>> freq = np.linspace(1e9, 5e9, 100)  # Frequency range from 1 GHz to 5 GHz
         >>> Z = np.random.rand(100)  # Example impedance data
         >>> bounds = [(10, 1000), (1, 100), (1e9, 5e9)]  # Example bounds for Rs, Q, fr
-        >>> algo = EvolutionaryAlgorithm(frequency_data=freq, impedance_data=Z, 
+        >>> algo = EvolutionaryAlgorithm(x_data=freq, y_data=Z, 
         ...                              N_resonators=1, parameterBounds=bounds)
         >>> print(algo.plane)
         'longitudinal'
         """
 
-        self.frequency_data = frequency_data
-        self.impedance_data = impedance_data
-        self.time_data = time_data
-        self.wake_data = wake_data
+        self.x_data = x_data
+        self.y_data = y_data
+
         self.N_resonators = N_resonators
         self.parameterBounds = parameterBounds
         self.objectiveFunction = objectiveFunction
         self.wake_length = wake_length
         self.plane = plane
-
-        if plane == "longitudinal" and N_resonators > 1:
-            self.fitFunction = partial(imp.n_Resonator_longitudinal_imp, wake_length=wake_length)
-        elif plane == "transverse" and N_resonators > 1:
-            self.fitFunction = partial(imp.n_Resonator_transverse_imp, wake_length=wake_length)
-        elif plane == "longitudinal" and N_resonators == 1:
-            self.fitFunction = partial(imp.Resonator_longitudinal_imp, wake_length=wake_length)
-        elif plane == "transverse" and N_resonators == 1:
-            self.fitFunction = partial(imp.Resonator_transverse_imp, wake_length=wake_length)
-        else:
-            raise Exception('Algorithm needs N_resonartors >= 1')
+        self.sigma = sigma
         
+        if fitFuncion == "wake" or fitFuncion == "wake function":
+            if plane == "longitudinal" and N_resonators > 1:
+                self.fitFunction = wak.n_Resonator_longitudinal_wake
+            elif plane == "transverse" and N_resonators > 1:
+                self.fitFunction = wak.n_Resonator_transverse_wake
+            elif plane == "longitudinal" and N_resonators == 1:
+                self.fitFunction = wak.Resonator_longitudinal_wake
+            elif plane == "transverse" and N_resonators == 1:
+                self.fitFunction = wak.Resonator_transverse_wake
+            else:
+                raise Exception('Algorithm needs N_resonartors >= 1')
+            self.time_data = x_data
+            self.wake_data = y_data
+
+        elif fitFuncion == "wake potential":
+            if self.sigma is None:
+                print('[!] sigma not specified, using the default sigma=1e-10 s')
+                self.sigma = 1e-10
+                
+            if plane == "longitudinal" and N_resonators > 1:
+                self.fitFunction = partial(wak.n_Resonator_longitudinal_wake_potential, sigma=self.sigma)
+            elif plane == "transverse" and N_resonators > 1:
+                self.fitFunction = partial(wak.n_Resonator_transverse_wake_potential, sigma=self.sigma)
+            elif plane == "longitudinal" and N_resonators == 1:
+                self.fitFunction = partial(wak.Resonator_longitudinal_wake_potential, sigma=self.sigma)
+            elif plane == "transverse" and N_resonators == 1:
+                self.fitFunction = partial(wak.Resonator_transverse_wake_potential, sigma=self.sigma)
+            else:
+                raise Exception('Algorithm needs N_resonartors >= 1')
+            self.time_data = x_data
+            self.wake_potential_data = y_data
+            
+        else: #Default to "impedance"
+            if wake_length is not None:
+                print('[!] Using the partially decayed resonator formalism for impedance')
+            else:
+                print('[!] Using the fully decayed resonator formalism for impedance')
+
+            if plane == "longitudinal" and N_resonators > 1:
+                self.fitFunction = partial(imp.n_Resonator_longitudinal_imp, wake_length=wake_length)
+            elif plane == "transverse" and N_resonators > 1:
+                self.fitFunction = partial(imp.n_Resonator_transverse_imp, wake_length=wake_length)
+            elif plane == "longitudinal" and N_resonators == 1:
+                self.fitFunction = partial(imp.Resonator_longitudinal_imp, wake_length=wake_length)
+            elif plane == "transverse" and N_resonators == 1:
+                self.fitFunction = partial(imp.Resonator_transverse_imp, wake_length=wake_length)
+            else:
+                raise Exception('Algorithm needs N_resonartors >= 1') 
+            self.frequency_data = x_data
+            self.impedance_data = y_data
+                      
         self.evolutionParameters = None
         self.minimizationParameters = None
                 
-    def check_impedance_data(self):
+    def check_y_data(self):
         """
         Small function to avoid 0 frequency leading to zero division when using resonators.
         """
-        mask = np.where(self.frequency_data > 0.)[0]
-        self.frequency_data = self.frequency_data[mask]
-        self.impedance_data = self.impedance_data[mask]
+        mask = np.where(self.x_data > 0.)[0]
+        self.x_data = self.x_data[mask]
+        self.y_data = self.y_data[mask]
     
 
     def generate_Initial_Parameters(self, parameterBounds, objectiveFunction, fitFunction,
@@ -224,8 +254,8 @@ class EvolutionaryAlgorithm:
         evolutionParameters, warning = self.generate_Initial_Parameters(self.parameterBounds, 
                                                            self.objectiveFunction, 
                                                            self.fitFunction, 
-                                                           self.frequency_data, 
-                                                           self.impedance_data, 
+                                                           self.x_data, 
+                                                           self.y_data, 
                                                            maxiter=maxiter, 
                                                            popsize=popsize, 
                                                            mutation=mutation, 
@@ -248,7 +278,7 @@ class EvolutionaryAlgorithm:
         """
         print('Method for minimization : '+method)
         objective_function = partial(self.objectiveFunction, fitFunction=self.fitFunction,
-                                x=self.frequency_data, y=self.impedance_data)
+                                x=self.x_data, y=self.y_data)
         
         if self.evolutionParameters is not None:
             minimizationBounds = [sorted(((1-margin)*p, (1+margin)*p)) for p in self.evolutionParameters]
