@@ -23,7 +23,7 @@ class EvolutionaryAlgorithm:
                  N_resonators,
                  parameterBounds,
                  plane="longitudinal", 
-                 fitFuncion="impedance",
+                 fitFunction="impedance",
                  objectiveFunction = obj.sumOfSquaredError,
                  wake_length=None,
                  sigma=None,
@@ -108,8 +108,16 @@ class EvolutionaryAlgorithm:
         self.wake_length = wake_length
         self.plane = plane
         self.sigma = sigma
+
+        self.time_data = None
+        self.wake_data = None
+        self.wake_potential_data = None
+        self.frequency_data = None
+        self.impedance_data = None
+        self.evolutionParameters = None
+        self.minimizationParameters = None
         
-        if fitFuncion == "wake" or fitFuncion == "wake function":
+        if fitFunction == "wake" or fitFunction == "wake function":
             if plane == "longitudinal" and N_resonators > 1:
                 self.fitFunction = wak.n_Resonator_longitudinal_wake
             elif plane == "transverse" and N_resonators > 1:
@@ -123,7 +131,7 @@ class EvolutionaryAlgorithm:
             self.time_data = x_data
             self.wake_data = y_data
 
-        elif fitFuncion == "wake potential":
+        elif fitFunction == "wake potential":
             if self.sigma is None:
                 print('[!] sigma not specified, using the default sigma=1e-10 s')
                 self.sigma = 1e-10
@@ -159,9 +167,6 @@ class EvolutionaryAlgorithm:
                 raise Exception('Algorithm needs N_resonartors >= 1') 
             self.frequency_data = x_data
             self.impedance_data = y_data
-                      
-        self.evolutionParameters = None
-        self.minimizationParameters = None
                 
     def check_y_data(self):
         """
