@@ -48,9 +48,6 @@ Check :file_folder: `examples/` for different DE resonator fitting cases
 * Resonator fitting on beam wire scanner simulation
 * Resonator fitting on SPS transistion device and extrapolation
 
-
-
-
 <img src="https://mattermost.web.cern.ch/files/4si7ipbezfyjdmd1zzr567hswh/public?h=2dcugjRruq3p9yEYea-9f1mXPfUbuujKRNh8dTA77a4"/>
 
 ## Contributors :woman_technologist: :man_technologist:
@@ -60,3 +57,8 @@ Check :file_folder: `examples/` for different DE resonator fitting cases
   * Smart Bound Determination
   * Example notebooks for extrapolation of analytical and simulated devices
 * Maintainer: Elena de la Fuente (elena.de.la.fuente.garcia@cern.ch)
+
+## Publications about `iddefix`
+- S. Joly, *Resonator impedance extrapolation of a partially decayed wake* presentation @ CERN ABP-CEI section meeting [link](https://indico.cern.ch/event/1265710/contributions/5315305/attachments/2621462/4532440/Partially_decayed_wake.pdf)
+- S. Joly, PhD Thesis *Recent advances in the CERN PS impedance model and instability simulations following the LHC Injectors Upgrade project* Sapienza Universita di Roma [link](https://hdl.handle.net/11573/1718791)
+- M. Raschke, *Evolutionary Algorithms for Wakefields* @ CERN ABP-CEI section meeting [link](https://indico.cern.ch/event/1496532/contributions/6303923/attachments/2992287/5283277/Evolutionary%20algorithms%20for%20Wakefields%20-%20CERN.pdf)
