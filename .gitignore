@@ -3,6 +3,9 @@
 *_build/
 *egg-info*
 
+# Tests png
+###########
+tests/*.png
 
 # Compiled source #
 ###################
