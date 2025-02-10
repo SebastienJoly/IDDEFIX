@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-# <img src="https://raw.githubusercontent.com/SebastienJoly/GARFIELD/main/logo.png"  width="400px"/>
-
-# IDDEFIX
-Impedance Determination through Differential Evolution FItting and eXtrapolation
-=======
 <img src="https://raw.githubusercontent.com/SebastienJoly/GARFIELD/main/logo.png"  width="100px"/>
 
 # IDDEFIX
 > Originally forked from https://github.com/SebastienJoly/IDDEFIX
->>>>>>> cei/main
 
 **I**mpedance **D**etermination through **D**ifferential **E**volution **FI**tting and e**X**trapolation.
 
