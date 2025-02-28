@@ -1,6 +1,7 @@
 <img src="https://raw.githubusercontent.com/SebastienJoly/GARFIELD/main/logo.png"  width="100px"/>
 
-# IDDEFIX
+# IDDEFIX [![DOI](https://zenodo.org/badge/318798682.svg)](https://zenodo.org/badge/latestdoi/{318798682})
+
 > Originally forked from https://github.com/SebastienJoly/IDDEFIX
 
 **I**mpedance **D**etermination through **D**ifferential **E**volution **FI**tting and e**X**trapolation.
