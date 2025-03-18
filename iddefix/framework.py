@@ -4,83 +4,6 @@
 Created on Mon Mar 23 13:20:11 2020
 
 @author: sjoly
-<<<<<<< HEAD
-"""
-import numpy as np
-from Genetic_algorithm import *
-from scipy.optimize import minimize
-
-'''def generate_parameterBounds(pars, margin=0.1):
-    """
-    Function used to regenerate parameter bounds when using the minimization algorithm.
-    Margin argument can be given to allow each parameter to deviate by 100*margin [%].
-    """
-    pars_reshape = pars.reshape(-1, 3)
-    new_bounds = []
-    for par in pars_reshape:
-        new_bounds.extend(tuple(sorted(((1-margin)*p, (1+margin)*p))) for p in par)
-    return new_bounds'''
-
-def display_resonator_parameters(solution):
-    """
-    Displays resonance parameters in a formatted table using ASCII characters.
-
-    Args:
-        solution: A NumPy array of resonator parameters, typically shaped (n_resonators, 3).
-    """
-
-    n_resonators, _ = solution.reshape(-1,3).shape
-    header_format = "{:^10}|{:^24}|{:^18}|{:^18}"
-    data_format = "{:^10d}|{:^24.2e}|{:^18.2f}|{:^18.3e}"
-
-    print("\n")
-    print("-" * 70)
-
-    # Print header
-    print(header_format.format("Resonator", "Rs [Ohm/m or Ohm]", "Q", "fres [Hz]"))
-    print("-" * 70)
-
-    # Print data
-    for i, parameters in enumerate(solution.reshape(-1,3)):
-        print(data_format.format(i + 1, *parameters))
-
-    print("-" * 70)
-
-class GeneticAlgorithm:
-    def __init__(self, 
-                 frequency_data, 
-                 impedance_data, 
-                 time_data, 
-                 wake_data, 
-                 N_resonators, 
-                 parameterBounds,
-                 minimizationFunction, 
-                 fitFunction
-                ):
-    
-        self.frequency_data = frequency_data
-        self.impedance_data = impedance_data
-        self.time_data = time_data
-        self.wake_data = wake_data
-        self.N_resonators = N_resonators
-        self.parameterBounds = parameterBounds
-        self.minimizationFunction = minimizationFunction
-        self.fitFunction = fitFunction
-        
-        self.geneticParameters = None
-        self.minimizationParameters = None
-                
-    def check_impedance_data(self):
-        """
-        Small function to avoid 0 frequency leading to zero division when using resonators.
-        """
-        mask = np.where(self.frequency_data > 0.)[0]
-        self.frequency_data = self.frequency_data[mask]
-        self.impedance_data = self.impedance_data[mask]
-    
-    
-    def run_geneticAlgorithm(self, 
-=======
 @modified by: MaltheRaschke
 """
 import numpy as np
@@ -324,7 +247,6 @@ class EvolutionaryAlgorithm:
         return solution, message
     
     def run_differential_evolution(self, 
->>>>>>> cei/main
                              maxiter=2000, 
                              popsize=15, 
                              mutation=(0.1, 0.5), 
@@ -334,19 +256,11 @@ class EvolutionaryAlgorithm:
                              vectorized=False,
                              solver='scipy',
                              iteration_convergence=False, debug=False):
-<<<<<<< HEAD
-        geneticParameters, warning = generate_Initial_Parameters(self.parameterBounds, 
-                                                           self.minimizationFunction, 
-                                                           self.fitFunction, 
-                                                           self.frequency_data, 
-                                                           self.impedance_data, 
-=======
         evolutionParameters, warning = self.generate_Initial_Parameters(self.parameterBounds, 
                                                            self.objectiveFunction, 
                                                            self.fitFunction, 
                                                            self.x_data, 
                                                            self.y_data, 
->>>>>>> cei/main
                                                            maxiter=maxiter, 
                                                            popsize=popsize, 
                                                            mutation=mutation, 
@@ -357,15 +271,6 @@ class EvolutionaryAlgorithm:
                                                            #iteration_convergence=iteration_convergence
                                                                 )
 
-<<<<<<< HEAD
-        self.geneticParameters = geneticParameters
-        self.warning = warning
-        display_resonator_parameters(self.geneticParameters)
-            
-    def run_minimizationAlgorithm(self, margin=0.1, method='Nelder-Mead'):
-        """
-        Minimization algorithm is used to refine results obtained by the genetic algorithm. 
-=======
         self.evolutionParameters = evolutionParameters
         self.warning = warning
         self.display_resonator_parameters(self.evolutionParameters)
@@ -373,20 +278,10 @@ class EvolutionaryAlgorithm:
     def run_minimization_algorithm(self, margin=0.1, method='Nelder-Mead'):
         """
         Minimization algorithm is used to refine results obtained by the DE algorithm. 
->>>>>>> cei/main
         They are used as initial guess for the algorithm and each parameter is allowed to be
         increased or decreased by 100*margin [%].
         """
         print('Method for minimization : '+method)
-<<<<<<< HEAD
-        minimization_function = partial(self.minimizationFunction, fitFunction=self.fitFunction,
-                                x=self.frequency_data, y=self.impedance_data)
-        
-        if self.geneticParameters is not None:
-            minimizationBounds = [sorted(((1-margin)*p, (1+margin)*p)) for p in self.geneticParameters]
-            minimizationParameters = minimize(minimization_function, 
-                                              x0=self.geneticParameters,
-=======
         objective_function = partial(self.objectiveFunction, fitFunction=self.fitFunction,
                                 x=self.x_data, y=self.y_data)
         
@@ -394,7 +289,6 @@ class EvolutionaryAlgorithm:
             minimizationBounds = [sorted(((1-margin)*p, (1+margin)*p)) for p in self.evolutionParameters]
             minimizationParameters = minimize(objective_function, 
                                               x0=self.evolutionParameters,
->>>>>>> cei/main
                                               bounds=minimizationBounds,
                                               tol=1, #empiric value, documentation is cryptic
                                               method=method, 
@@ -404,13 +298,8 @@ class EvolutionaryAlgorithm:
                                                        'adaptive': True}
                                              )
         else:
-<<<<<<< HEAD
-            print('Genetic algorithm not run, minimization only')
-            minimizationParameters = minimize(minimization_function, 
-=======
             print('Differential Evolution algorithm not run, minimization only')
             minimizationParameters = minimize(objective_function, 
->>>>>>> cei/main
                                               x0=np.mean(self.parameterBounds, axis=1),
                                               bounds=self.parameterBounds, 
                                               method=method, 
@@ -421,9 +310,6 @@ class EvolutionaryAlgorithm:
                                                        'adaptive': True}
                                              ) 
         self.minimizationParameters = minimizationParameters.x
-<<<<<<< HEAD
-        display_resonator_parameters(self.minimizationParameters)
-=======
         self.display_resonator_parameters(self.minimizationParameters)
     
     def display_resonator_parameters(self, params=None, to_markdown=False):
@@ -628,4 +514,3 @@ class EvolutionaryAlgorithm:
 
         return ext_time_data, ext_wake_data   
     
->>>>>>> cei/main
